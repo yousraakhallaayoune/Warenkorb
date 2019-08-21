@@ -4,8 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Basket;
 use App\Form\BasketType;
-use App\Entity\Product;
-use App\Form\ProductType;
 use App\Entity\ProductPurchase;
 use App\Form\ProductPurchaseType;
 // use FOS\RestBundle\Controller\FOSRestController;
