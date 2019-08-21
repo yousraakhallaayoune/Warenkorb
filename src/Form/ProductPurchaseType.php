@@ -32,7 +32,8 @@ class ProductPurchaseType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => ProductPurchase::class
+            'data_class' => ProductPurchase::class,
+            'csrf_protection' => false
         ]);
     }
 }

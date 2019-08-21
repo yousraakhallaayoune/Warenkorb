@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Basket;
 use App\Form\BasketType;
+use App\Entity\Product;
+use App\Form\ProductType;
 use App\Entity\ProductPurchase;
 use App\Form\ProductPurchaseType;
 // use FOS\RestBundle\Controller\FOSRestController;
@@ -75,17 +77,33 @@ class BasketController extends BaseController
 
         $idBasket = $basket->getId();
         
-        $productPArray = $request->request->get('productPurchases');	
+        $productPArray = $request->request->get('productPurchases');
+        
+        $productsPurchasesTab = [];
+
         for($i=0 ; $i<count($productPArray); $i++){
         	$productP = json_decode($productPArray[$i]);
         	$productP->basket = $idBasket;
         	
-        	$request->request->set('productPurchases',$productP);
+        	$request->request->replace((array)$productP);
+            
         	
-        	//add the ProductPurchase
-			$this->postProductPurchase($request);
+        	$productPurchase = new ProductPurchase();
+            $form = $this->createForm(ProductPurchaseType::class, $productPurchase);
+            $form->submit($request->request->all());
+            if ($form->isValid()) {
+                $em->persist($productPurchase);
+                $em->flush();
+            }
+
+            array_push($productsPurchasesTab, $productPurchase);
+            
 		}
-        return  $productP;
+       
+        $result = [];
+        $result["basket"] = $basket;
+        $result["productsPurchases"] = $productsPurchasesTab;
+        return  $result;
 	}
 
 	/**
@@ -263,29 +281,33 @@ class BasketController extends BaseController
     public function postProductPurchase(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $productPurchase = new ProductPurchase();
+       
 		
-		$basket = $request->request->get('productPurchases')->basket;//$request->request->get('basket');
+		// $basket = $request->request->get('productPurchases')->basket;
+        $basket = $request->request->get('basket');
         
 		if (empty($basket)) {
             return $this->sendMessage('basket not found');
         }
 
-        $product = $request->request->get('productPurchases')->product;//$request->request->get('product');
+        // $product = $request->request->get('productPurchases')->product;
+        
+        $product = $request->request->get('product');
+        
         if (empty($product)) {
             return $this->sendMessage('product not found');
         }
-
+        
+        $productPurchase = new ProductPurchase();
         $form = $this->createForm(ProductPurchaseType::class, $productPurchase);
         
-		// $form->submit($request->request->all());
+		$form->submit($request->request->all());
 
-		$form->submit((array)$request->request->get('productPurchases'));
-        if ($form->isValid()) {
+		if ( $form->isValid()) {
 
             $em->persist($productPurchase);
 			$em->flush();
-            //var_dump($productPurchase);
+           
             return $productPurchase;
 		} else {
             return $form;

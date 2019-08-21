@@ -26,17 +26,19 @@ class ProductPurchase
     private $product;
 
     /**
-     * @ORM\Column(type="integer")
-     * @Groups({"productPurchase", "Default"})
-     */
-    private $quantity;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Basket", inversedBy="productPurchases")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"productPurchase", "Default"})
      */
     private $basket;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @Groups({"productPurchase", "Default"})
+     */
+    private $quantity;
+
+
 
     public function getId(): ?int
     {

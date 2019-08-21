@@ -15,10 +15,15 @@ class BasketType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $opts = array('error_bubbling' => false);
+        $opts = array('error_bubbling' => true);
 
         $builder
             ->add('createdAt', DateTimeType::class, $opts)
+            // ->add('productPurchase', EntityType::class, array(
+            //     'class' => ProductPurchase::class,
+            //     'choice_label'  => 'id',
+            //     'error_bubbling' => true,
+            //     'multiple' => true))
         ;
     }
 
